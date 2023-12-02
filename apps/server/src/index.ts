@@ -24,6 +24,26 @@ const configuration = new Configuration({
   },
 });
 const plaid = new PlaidApi(configuration);
+/**
+ * Plaid FLOW
+ *
+ * Initialization:
+ * 1. Client requests link token from server
+ * 2. Server requests Plaid for link token
+ * 3. Server sends link token to client
+ * 4. Client sends link token to Plaid after bank logins
+ * 5. Plaid sends public token to client
+ * 6. Client sends public token to server
+ * 7. Server sends public token to Plaid
+ * 8. Plaid sends access token to server
+ * 9. Server stores access token for user
+ *
+ * Plaid API:
+ * 1. CLient requests data from server
+ * 2. Server requests data from Plaid with access token and other params
+ * 3. Plaid sends data to server
+ * 4. Server sends data to client
+ */
 
 const PLAID_PRODUCTS = process.env.PLAID_PRODUCTS
   ? process.env.PLAID_PRODUCTS.split(",").map(
@@ -36,6 +56,13 @@ const PLAID_COUNTRY_CODES = process.env.PLAID_COUNTRY_CODES
     )
   : [CountryCode.Us];
 
+// We store the access_token in memory - in production, store it in a secure
+// persistent data store
+let ACCESS_TOKEN: string = "";
+let PUBLIC_TOKEN: string = "";
+let ITEM_ID = null;
+let ACCOUNT_ID = null;
+
 const app = express();
 app.use(cors());
 
@@ -43,6 +70,7 @@ app.get("/", (_, res: Response) => {
   return res.send("Hello World!");
 });
 
+// 1. 2. 3. Server requests Plaid for link token and sends it to client
 app.post("/api/link_token", (_, res: Response, next: NextFunction) => {
   Promise.resolve()
     .then(async () => {
@@ -62,6 +90,22 @@ app.post("/api/link_token", (_, res: Response, next: NextFunction) => {
     })
     .catch(next);
 });
+
+// 4. 5. 6. 7. 8. 9. Client sends public token to server, server sends it to Plaid, Plaid sends access token to server
+app.post(
+  "/api/access_token",
+  (req: Request, res: Response, next: NextFunction) => {
+    PUBLIC_TOKEN = req.body.public_token;
+    Promise.resolve().then(async () => {
+      const token_response = await plaid.itemPublicTokenExchange({
+        public_token: PUBLIC_TOKEN,
+      });
+      console.log(token_response);
+      ACCESS_TOKEN = token_response.data.access_token;
+      ITEM_ID = token_response.data.item_id;
+    });
+  },
+);
 
 app.listen(process.env.SERVER_PORT, () =>
   console.log(`Server is alive on http://localhost:${SERVER_PORT}`),
