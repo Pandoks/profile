@@ -60,8 +60,6 @@ const PLAID_COUNTRY_CODES = process.env.PLAID_COUNTRY_CODES
 // persistent data store
 let ACCESS_TOKEN: string = "";
 let PUBLIC_TOKEN: string = "";
-let ITEM_ID = null;
-let ACCOUNT_ID = null;
 
 const app = express();
 app.use(cors());
@@ -96,14 +94,16 @@ app.post(
   "/api/access_token",
   (req: Request, res: Response, next: NextFunction) => {
     PUBLIC_TOKEN = req.body.public_token;
-    Promise.resolve().then(async () => {
-      const token_response = await plaid.itemPublicTokenExchange({
-        public_token: PUBLIC_TOKEN,
-      });
-      console.log(token_response);
-      ACCESS_TOKEN = token_response.data.access_token;
-      ITEM_ID = token_response.data.item_id;
-    });
+    Promise.resolve()
+      .then(async () => {
+        const token_response = await plaid.itemPublicTokenExchange({
+          public_token: PUBLIC_TOKEN,
+        });
+        console.log(token_response);
+        ACCESS_TOKEN = token_response.data.access_token;
+        return res.status(200);
+      })
+      .catch(next);
   },
 );
 
