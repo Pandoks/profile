@@ -69,30 +69,33 @@ app.get("/", (_, res: Response) => {
 });
 
 // 1. 2. 3. Server requests Plaid for link token and sends it to client
-app.post("/api/link_token", (_, res: Response, next: NextFunction) => {
-  Promise.resolve()
-    .then(async () => {
+app.get(
+  "/api/link_token",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
       const configs = {
         user: {
-          client_user_id: "user",
+          client_user_id: "user-id",
         },
         client_name: "Plaid Quickstart",
         products: PLAID_PRODUCTS,
         country_codes: PLAID_COUNTRY_CODES,
         language: "en",
       };
-
       const token_response = await plaid.linkTokenCreate(configs);
-      console.log(token_response);
+      console.log("Token response:\n", token_response);
       return res.json(token_response.data);
-    })
-    .catch(next);
-});
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 // 4. 5. 6. 7. 8. 9. Client sends public token to server, server sends it to Plaid, Plaid sends access token to server
 app.post(
   "/api/access_token",
   (req: Request, res: Response, next: NextFunction) => {
+    console.log("/api/access_token hit");
     PUBLIC_TOKEN = req.body.public_token;
     Promise.resolve()
       .then(async () => {
