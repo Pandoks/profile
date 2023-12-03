@@ -78,27 +78,24 @@ app.get("/", (_, res: Response) => {
 });
 
 // 1. 2. 3. Server requests Plaid for link token and sends it to client
-app.get(
-  "/api/link_token",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const configs = {
-        user: {
-          client_user_id: "user-id",
-        },
-        client_name: "Plaid Quickstart",
-        products: PLAID_PRODUCTS,
-        country_codes: PLAID_COUNTRY_CODES,
-        language: "en",
-      };
-      const token_response = await plaid.linkTokenCreate(configs);
-      console.log("Token response:\n", token_response.data);
-      return res.json(token_response.data);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+app.get("/api/link_token", async (_, res: Response, next: NextFunction) => {
+  try {
+    const configs = {
+      user: {
+        client_user_id: "user-id",
+      },
+      client_name: "Plaid Quickstart",
+      products: PLAID_PRODUCTS,
+      country_codes: PLAID_COUNTRY_CODES,
+      language: "en",
+    };
+    const token_response = await plaid.linkTokenCreate(configs);
+    console.log("Token response:\n", token_response.data);
+    return res.json(token_response.data);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // 4. 5. 6. 7. 8. 9. Client sends public token to server, server sends it to Plaid, Plaid sends access token to server
 app.post(
@@ -117,40 +114,37 @@ app.post(
   },
 );
 
-app.get(
-  "/api/transactions",
-  async (req: Request, res: Response, next: NextFunction) => {
-    let database_cursor = CURSOR;
-    let temporary_cursor = database_cursor;
+app.get("/api/transactions", async () => {
+  let database_cursor = CURSOR;
+  let temporary_cursor = database_cursor;
 
-    // new transaction updates since cursor
-    let added: Array<Transaction> = [];
-    let modified: Array<Transaction> = [];
-    let removed: Array<RemovedTransaction> = [];
+  // new transaction updates since cursor
+  let added: Array<Transaction> = [];
+  let modified: Array<Transaction> = [];
+  let removed: Array<RemovedTransaction> = [];
 
-    let has_more = true; // transactions are sent paginated
-    while (has_more) {
-      const request: TransactionsSyncRequest = {
-        access_token: ACCESS_TOKEN,
-        cursor: temporary_cursor,
-      };
-      const response = await plaid.transactionsSync(request);
-      const data = response.data;
+  let has_more = true; // transactions are sent paginated
+  while (has_more) {
+    const request: TransactionsSyncRequest = {
+      access_token: ACCESS_TOKEN,
+      cursor: temporary_cursor,
+    };
+    const response = await plaid.transactionsSync(request);
+    const data = response.data;
 
-      added = added.concat(data.added);
-      modified = modified.concat(data.modified);
-      removed = removed.concat(data.removed);
+    added = added.concat(data.added);
+    modified = modified.concat(data.modified);
+    removed = removed.concat(data.removed);
 
-      has_more = data.has_more;
+    has_more = data.has_more;
 
-      temporary_cursor = data.next_cursor;
-    }
+    temporary_cursor = data.next_cursor;
+  }
 
-    console.log("Added: ", added);
-    console.log("Modified: ", modified);
-    console.log("Removed: ", removed);
-  },
-);
+  console.log("Added: ", added);
+  console.log("Modified: ", modified);
+  console.log("Removed: ", removed);
+});
 
 app.listen(process.env.SERVER_PORT, () =>
   console.log(`Server is alive on http://localhost:${SERVER_PORT}`),
