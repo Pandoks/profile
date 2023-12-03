@@ -14,12 +14,13 @@
 
 	const exchangePublicToken = async (public_token: any) => {
 		console.log('exchangePublicToken');
+		console.log(public_token);
 		await fetch('http://localhost:3000/api/access_token', {
 			method: 'POST',
-			body: JSON.stringify({ public_token: public_token }),
 			headers: {
 				'Content-Type': 'application/json'
-			}
+			},
+			body: JSON.stringify({ public_token: public_token })
 		});
 	};
 

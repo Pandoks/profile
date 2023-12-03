@@ -59,10 +59,10 @@ const PLAID_COUNTRY_CODES = process.env.PLAID_COUNTRY_CODES
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
 let ACCESS_TOKEN: string = "";
-let PUBLIC_TOKEN: string = "";
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 app.get("/", (_, res: Response) => {
   return res.send("Hello World!");
@@ -83,7 +83,7 @@ app.get(
         language: "en",
       };
       const token_response = await plaid.linkTokenCreate(configs);
-      console.log("Token response:\n", token_response);
+      console.log("Token response:\n", token_response.data);
       return res.json(token_response.data);
     } catch (error) {
       next(error);
@@ -94,19 +94,17 @@ app.get(
 // 4. 5. 6. 7. 8. 9. Client sends public token to server, server sends it to Plaid, Plaid sends access token to server
 app.post(
   "/api/access_token",
-  (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     console.log("/api/access_token hit");
-    PUBLIC_TOKEN = req.body.public_token;
-    Promise.resolve()
-      .then(async () => {
-        const token_response = await plaid.itemPublicTokenExchange({
-          public_token: PUBLIC_TOKEN,
-        });
-        console.log(token_response);
-        ACCESS_TOKEN = token_response.data.access_token;
-        return res.status(200);
-      })
-      .catch(next);
+    try {
+      const token_response = await plaid.itemPublicTokenExchange({
+        public_token: req.body.public_token,
+      });
+      ACCESS_TOKEN = token_response.data.access_token;
+      return res.status(200);
+    } catch (error) {
+      next(error);
+    }
   },
 );
 
