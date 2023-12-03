@@ -5,6 +5,8 @@ import {
   PlaidApi,
   PlaidEnvironments,
   Products,
+  Transaction,
+  TransactionsSyncRequest,
 } from "plaid";
 import cors from "cors";
 
@@ -60,6 +62,12 @@ const PLAID_COUNTRY_CODES = process.env.PLAID_COUNTRY_CODES
 // persistent data store
 let ACCESS_TOKEN: string = "";
 
+// Cursor is a bookmark for fetched transactions so Plaid doesn't have to send entire history everytime
+// Store with Access Token so you don't lose your place. Keep track of original cursor as you paginate
+// through transactions just in case you need to restart. Once you get all transaction data needed, then
+// you update
+let CURSOR: string = "";
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -105,6 +113,41 @@ app.post(
     } catch (error) {
       next(error);
     }
+  },
+);
+
+app.get(
+  "/api/transactions",
+  (req: Request, res: Response, next: NextFunction) => {
+    let database_cursor = CURSOR;
+    let temporary_cursor = database_cursor;
+
+    // new transaction updates since cursor
+    let added: Array<Transaction> = [];
+    let modified: Array<Transaction> = [];
+    let removed: Array<RemovedTransaction> = [];
+
+    let has_more = true; // transactions are sent paginated
+    while (has_more) {
+      const request: TransactionsSyncRequest = {
+        access_token: ACCESS_TOKEN,
+        cursor: temporary_cursor,
+      };
+      const response = await plaid.transactionsSync(request);
+      const data = response.data;
+
+      added = added.concat(data.added);
+      modified = modified.concat(data.modified);
+      removed = removed.concat(data.removed);
+
+      has_more = data.has_more;
+
+      temporary_cursor = data.next_cursor;
+    }
+
+    console.log("Added: ", added);
+    console.log("Modified: ", modified);
+    console.log("Removed: ", removed);
   },
 );
 
