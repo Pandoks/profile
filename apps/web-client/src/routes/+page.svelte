@@ -36,6 +36,10 @@
 		Plaid = window.Plaid;
 		plaid_login = await createLogin();
 	});
+
+	const getTransactions = () => {
+		fetch('http://localhost:3000/api/transactions');
+	};
 </script>
 
 <svelte:head>
@@ -43,3 +47,4 @@
 </svelte:head>
 
 <button on:click={plaid_login.open()}>Link Account</button>
+<button on:click={getTransactions}>Get Transactions</button>

@@ -5,6 +5,7 @@ import {
   PlaidApi,
   PlaidEnvironments,
   Products,
+  RemovedTransaction,
   Transaction,
   TransactionsSyncRequest,
 } from "plaid";
@@ -118,7 +119,7 @@ app.post(
 
 app.get(
   "/api/transactions",
-  (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     let database_cursor = CURSOR;
     let temporary_cursor = database_cursor;
 
