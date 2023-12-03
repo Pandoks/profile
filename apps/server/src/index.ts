@@ -82,9 +82,9 @@ app.post("/api/link_token", (_, res: Response, next: NextFunction) => {
         language: "en",
       };
 
-      const link_token = await plaid.linkTokenCreate(configs);
-      console.log(link_token);
-      return res.json(link_token.data);
+      const token_response = await plaid.linkTokenCreate(configs);
+      console.log(token_response);
+      return res.json(token_response.data);
     })
     .catch(next);
 });

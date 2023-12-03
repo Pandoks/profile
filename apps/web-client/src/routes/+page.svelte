@@ -1,2 +1,8 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	const Plaid = (window as any).Plaid;
+	const handler = Plaid.create({});
+</script>
+
+<svelte:head>
+	<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+</svelte:head>
