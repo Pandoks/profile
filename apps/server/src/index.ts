@@ -114,7 +114,7 @@ app.post(
   },
 );
 
-app.get("/api/transactions", async () => {
+app.get("/api/transactions", async (_, res: Response) => {
   let database_cursor = CURSOR;
   let temporary_cursor = database_cursor;
 
@@ -140,10 +140,11 @@ app.get("/api/transactions", async () => {
 
     temporary_cursor = data.next_cursor;
   }
+  added = [...added].sort((first, second) => {
+    return Number(second.date > first.date) - Number(second.date < first.date);
+  });
 
-  console.log("Added: ", added);
-  console.log("Modified: ", modified);
-  console.log("Removed: ", removed);
+  return res.json({ added: added });
 });
 
 app.listen(process.env.SERVER_PORT, () =>

@@ -3,6 +3,7 @@
 
   let Plaid: any;
   let plaid_login: any;
+  let transactions: any;
 
   const getLinkToken = async () => {
     console.log('getLinkToken');
@@ -37,8 +38,11 @@
     plaid_login = await createLogin();
   });
 
-  const getTransactions = () => {
-    fetch('http://localhost:3000/api/transactions');
+  const getTransactions = async () => {
+    const res = await fetch('http://localhost:3000/api/transactions');
+    const data = await res.json();
+    transactions = data.added;
+    console.log(data);
   };
 </script>
 
@@ -48,3 +52,8 @@
 
 <button on:click={plaid_login.open()}>Link Account</button>
 <button on:click={getTransactions}>Get Transactions</button>
+{#if transactions}
+  {#each transactions as transaction}
+    <div>{transaction.amount} {transaction.name} {transaction.date}</div>
+  {/each}
+{/if}
