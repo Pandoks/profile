@@ -79,6 +79,7 @@ app.get("/", (_, res: Response) => {
 
 // 1. 2. 3. Server requests Plaid for link token and sends it to client
 app.get("/api/link_token", async (_, res: Response, next: NextFunction) => {
+  console.log("\n----- /api/link_token hit -----");
   try {
     const configs = {
       user: {
@@ -101,12 +102,13 @@ app.get("/api/link_token", async (_, res: Response, next: NextFunction) => {
 app.post(
   "/api/access_token",
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("/api/access_token hit");
+    console.log("\n----- /api/access_token hit -----");
     try {
       const token_response = await plaid.itemPublicTokenExchange({
         public_token: req.body.public_token,
       });
       ACCESS_TOKEN = token_response.data.access_token;
+      console.log("Token response:\n", token_response.data);
       return res.status(200);
     } catch (error) {
       next(error);
