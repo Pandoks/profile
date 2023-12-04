@@ -6,16 +6,12 @@
   let transactions: any;
 
   const getLinkToken = async () => {
-    console.log('getLinkToken');
     const res = await fetch('http://localhost:3000/api/link_token');
     const data = await res.json();
-    console.log(data);
     return data.link_token;
   };
 
   const exchangePublicToken = async (public_token: any) => {
-    console.log('exchangePublicToken');
-    console.log(public_token);
     await fetch('http://localhost:3000/api/access_token', {
       method: 'POST',
       headers: {
@@ -33,7 +29,6 @@
   };
 
   onMount(async () => {
-    console.log('onMount');
     Plaid = window.Plaid;
     plaid_login = await createLogin();
   });
