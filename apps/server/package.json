@@ -21,6 +21,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "dotenv": "^16.3.1",
+    "drizzle-kit": "^0.20.9",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2"
   }
