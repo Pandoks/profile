@@ -14,20 +14,29 @@ import { connect } from "@planetscale/database";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 
 const SERVER_PORT = process.env.SERVER_PORT || 3333;
+const ENV = process.env.PLAID_ENV || "sandbox";
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
-const PLAID_ENV = process.env.PLAID_ENV || "sandbox";
 
-const PLANETSCALE_DATABASE_HOST = process.env.PLANETSCALE_DATABASE_HOST;
-const PLANETSCALE_DATABASE_USERNAME = process.env.PLANETSCALE_DATABASE_USERNAME;
-const PLANETSCALE_DATABASE_PASSWORD = process.env.PLANETSCALE_DATABASE_PASSWORD;
+const PLANETSCALE_DATABASE_HOST =
+  ENV === "production"
+    ? process.env.PLANETSCALE_DATABASE_HOST
+    : process.env.DEVELOPMENT_DATABASE_HOST;
+const PLANETSCALE_DATABASE_USERNAME =
+  ENV === "production"
+    ? process.env.PLANETSCALE_DATABASE_USERNAME
+    : process.env.DEVELOPMENT_DATABASE_USERNAME;
+const PLANETSCALE_DATABASE_PASSWORD =
+  ENV === "production"
+    ? process.env.PLANETSCALE_DATABASE_PASSWORD
+    : process.env.DEVELOPMENT_DATABASE_PASSWORD;
 
 /** ---------- PLAID SETUP ---------- **/
 let plaid: any;
-if (PLAID_ENV === "sandbox") {
+if (ENV === "sandbox") {
   const plaid_configuration = new Configuration({
-    basePath: PlaidEnvironments[PLAID_ENV],
+    basePath: PlaidEnvironments[ENV],
     baseOptions: {
       headers: {
         "PLAID-CLIENT-ID": PLAID_CLIENT_ID,
@@ -37,7 +46,7 @@ if (PLAID_ENV === "sandbox") {
     },
   });
   plaid = new PlaidApi(plaid_configuration);
-} else if (PLAID_ENV === "production") {
+} else if (ENV === "production") {
   const plaid_sdk = require("plaid");
   plaid = new plaid_sdk.Client({
     clientID: [PLAID_CLIENT_ID],
