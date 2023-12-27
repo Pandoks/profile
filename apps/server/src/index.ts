@@ -10,12 +10,20 @@ import {
   TransactionsSyncRequest,
 } from "plaid";
 import cors from "cors";
+import { connect } from "@planetscale/database";
+import { drizzle } from "drizzle-orm/planetscale-serverless";
 
 const SERVER_PORT = process.env.SERVER_PORT || 3333;
+
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
 const PLAID_ENV = process.env.PLAID_ENV || "sandbox";
 
+const PLANETSCALE_DATABASE_HOST = process.env.PLANETSCALE_DATABASE_HOST;
+const PLANETSCALE_DATABASE_USERNAME = process.env.PLANETSCALE_DATABASE_USERNAME;
+const PLANETSCALE_DATABASE_PASSWORD = process.env.PLANETSCALE_DATABASE_PASSWORD;
+
+/** ---------- PLAID SETUP ---------- **/
 let plaid: any;
 if (PLAID_ENV === "sandbox") {
   const plaid_configuration = new Configuration({
@@ -81,6 +89,15 @@ let ACCESS_TOKEN: string = "";
 // you update
 let CURSOR: string = "";
 
+/** ---------- DATABASE SETUP ---------- **/
+const planetscale_connection = connect({
+  host: PLANETSCALE_DATABASE_HOST,
+  username: PLANETSCALE_DATABASE_USERNAME,
+  password: PLANETSCALE_DATABASE_PASSWORD,
+});
+const db = drizzle(planetscale_connection);
+
+/** ---------- EXPRESS SERVER SETUP ---------- **/
 const app = express();
 app.use(cors());
 app.use(express.json());
