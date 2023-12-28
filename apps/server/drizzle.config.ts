@@ -17,6 +17,14 @@ const PLANETSCALE_DATABASE_PASSWORD =
     ? process.env.PLANETSCALE_DATABASE_PASSWORD
     : process.env.DEVELOPMENT_DATABASE_PASSWORD;
 
+if (!PLANETSCALE_DATABASE_HOST) {
+  throw new Error("PLANETSCALE_DATABASE_HOST is not defined");
+} else if (!PLANETSCALE_DATABASE_USERNAME) {
+  throw new Error("PLANETSCALE_DATABASE_USERNAME is not defined");
+} else if (!PLANETSCALE_DATABASE_PASSWORD) {
+  throw new Error("PLANETSCALE_DATABASE_PASSWORD is not defined");
+}
+
 export default {
   schema: "./db/schema.ts",
   out: "./db/migrations",
