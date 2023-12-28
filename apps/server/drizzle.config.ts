@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
 
 const ENV = process.env.PLAID_ENV || "sandbox";
+const PLANETSCALE_DATABASE = process.env.PLANETSCALE_DATABASE || "profile";
 const PLANETSCALE_DATABASE_HOST =
   ENV === "production"
     ? process.env.PLANETSCALE_DATABASE_HOST
@@ -25,14 +26,16 @@ if (!PLANETSCALE_DATABASE_HOST) {
   throw new Error("PLANETSCALE_DATABASE_PASSWORD is not defined");
 }
 
+const PLANETSCALE_DATABASE_URL = `mysql://${PLANETSCALE_DATABASE_USERNAME}:${PLANETSCALE_DATABASE_PASSWORD}@${PLANETSCALE_DATABASE_HOST}/${PLANETSCALE_DATABASE}?ssl={"rejectUnauthorized":true}`;
+if (!PLANETSCALE_DATABASE_URL) {
+  throw new Error("PLANETSCALE_DATABASE_URL is not defined");
+}
+
 export default {
   schema: "./db/schema.ts",
   out: "./db/migrations",
   driver: "mysql2",
   dbCredentials: {
-    host: PLANETSCALE_DATABASE_HOST!,
-    user: PLANETSCALE_DATABASE_USERNAME,
-    password: PLANETSCALE_DATABASE_PASSWORD,
-    database: "profile",
+    uri: PLANETSCALE_DATABASE_URL,
   },
 } satisfies Config;
