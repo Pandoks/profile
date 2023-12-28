@@ -1,4 +1,7 @@
 import { Config } from "drizzle-kit";
+import dotenv from "dotenv";
+
+dotenv.config({ path: "../../.env" });
 
 const ENV = process.env.PLAID_ENV || "sandbox";
 const PLANETSCALE_DATABASE_HOST =
