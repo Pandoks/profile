@@ -1,5 +1,19 @@
-import { mysqlTable, serial } from "drizzle-orm/mysql-core";
+import { datetime, mysqlTable, varchar } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("users", {
-  id: serial("id").primaryKey(),
+  id: varchar("id", {
+    length: 255,
+  }).primaryKey(),
+});
+
+export const sessions = mysqlTable("sessions", {
+  id: varchar("id", {
+    length: 255,
+  }).primaryKey(),
+  userId: varchar("user_id", {
+    length: 255,
+  })
+    .notNull()
+    .references(() => users.id),
+  expiration: datetime("expiration").notNull(),
 });
