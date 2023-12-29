@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@lucia-auth/adapter-drizzle": "^1.0.0-beta.4",
     "@planetscale/database": "^1.13.0",
     "cors": "^2.8.5",
     "drizzle-orm": "^0.29.2",
