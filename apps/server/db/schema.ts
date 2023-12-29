@@ -15,5 +15,5 @@ export const sessions = mysqlTable("sessions", {
   })
     .notNull()
     .references(() => users.id),
-  expiration: datetime("expiration").notNull(),
+  expiresAt: datetime("expires_at").notNull(),
 });
