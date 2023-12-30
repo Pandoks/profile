@@ -110,10 +110,25 @@ const planetscale_connection = connect({
 const db = drizzle(planetscale_connection);
 
 /** ---------- AUTH SETUP ---------- **/
-const lucia = new Lucia(new DrizzleMySQLAdapter(db, sessions, users));
+const lucia = new Lucia(new DrizzleMySQLAdapter(db, sessions, users), {
+  sessionCookie: {
+    attributes: {
+      secure: ENV === "production",
+    },
+  },
+  getUserAttributes: (user_attributes) => {
+    return {
+      username: user_attributes.username,
+    };
+  },
+});
+
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
+  }
+  interface DatabaseUserAttributes {
+    username: string;
   }
 }
 
