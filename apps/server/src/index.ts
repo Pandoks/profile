@@ -14,6 +14,7 @@ import { connect } from "@planetscale/database";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 import { DrizzleMySQLAdapter } from "@lucia-auth/adapter-drizzle";
 import { sessions, users } from "../db/schema";
+import { Lucia } from "lucia";
 
 const SERVER_PORT = process.env.SERVER_PORT || 3333;
 const ENV = process.env.PLAID_ENV || "sandbox";
@@ -109,7 +110,7 @@ const planetscale_connection = connect({
 const db = drizzle(planetscale_connection);
 
 /** ---------- AUTH SETUP ---------- **/
-const drizzle_adapter = new DrizzleMySQLAdapter(db, sessions, users);
+const lucia = new Lucia(new DrizzleMySQLAdapter(db, sessions, users));
 
 /** ---------- EXPRESS SERVER SETUP ---------- **/
 const app = express();
