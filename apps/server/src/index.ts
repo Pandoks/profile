@@ -111,6 +111,11 @@ const db = drizzle(planetscale_connection);
 
 /** ---------- AUTH SETUP ---------- **/
 const lucia = new Lucia(new DrizzleMySQLAdapter(db, sessions, users));
+declare module "lucia" {
+  interface Register {
+    Lucia: typeof lucia;
+  }
+}
 
 /** ---------- EXPRESS SERVER SETUP ---------- **/
 const app = express();
