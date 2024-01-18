@@ -2,11 +2,21 @@ import { lucia } from '$lib/server/auth';
 import { db } from '$lib/server/db/db';
 import { users } from '$lib/server/db/schema';
 import { DatabaseError } from '@planetscale/database';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 import { z } from 'zod';
+import type { Actions, PageServerLoad } from './$types';
 
+// check if logged in
+export const load: PageServerLoad = async (event) => {
+  if (event.locals.user) {
+    return redirect(302, '/');
+  }
+  return {};
+};
+
+// handle signup
 const form_data_schema = z.object({
   username: z
     .string()
