@@ -32,7 +32,7 @@ if (!PLANETSCALE_DATABASE_URL) {
 }
 
 export default {
-  schema: './db/schema.ts',
+  schema: './src/lib/server/db/schema.ts',
   out: './db/migrations',
   driver: 'mysql2',
   dbCredentials: {

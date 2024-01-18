@@ -1,4 +1,5 @@
-import { db, users } from '$lib/server/db';
+import { db } from '$lib/server/db/db';
+import { users } from '$lib/server/db/schema';
 import { fail, type Actions } from '@sveltejs/kit';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
