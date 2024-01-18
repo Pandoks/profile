@@ -16,6 +16,7 @@
 		"@sveltejs/kit": "^1.27.4",
 		"@types/plaid-link": "^2.0.15",
 		"autoprefixer": "^10.4.16",
+		"dotenv": "^16.3.1",
 		"postcss": "^8.4.32",
 		"prettier": "^3.0.0",
 		"prettier-plugin-svelte": "^3.0.0",
@@ -28,6 +29,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@lucia-auth/adapter-drizzle": "^1.0.0-beta.5",
+		"@planetscale/database": "^1.13.0",
+		"drizzle-orm": "^0.29.3",
+		"lucia": "^3.0.0-beta.14",
 		"oslo": "^0.27.1",
 		"zod": "^3.22.4"
 	}
