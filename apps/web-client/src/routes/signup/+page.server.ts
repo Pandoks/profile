@@ -30,6 +30,10 @@ export const actions: Actions = {
 
       const session = await lucia.createSession(user_id, {});
       const session_cookie = lucia.createSessionCookie(session.id);
+      event.cookies.set(session_cookie.name, session_cookie.value, {
+        path: '.',
+        ...session_cookie.attributes
+      });
     } catch (error) {
       console.log(typeof error);
       if (error instanceof z.ZodError) {
