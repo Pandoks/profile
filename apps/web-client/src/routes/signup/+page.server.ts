@@ -1,3 +1,4 @@
+import { lucia } from '$lib/server/auth';
 import { db } from '$lib/server/db/db';
 import { users } from '$lib/server/db/schema';
 import { DatabaseError } from '@planetscale/database';
@@ -22,9 +23,13 @@ export const actions: Actions = {
       const { username, password } = form_data_schema.parse(Object.fromEntries(form_data));
       const user_id = generateId(15);
       const hashed_password = await new Argon2id().hash(password);
+
       await db
         .insert(users)
         .values({ id: user_id, username: username, hashedPassword: hashed_password });
+
+      const session = await lucia.createSession(user_id, {});
+      const session_cookie = lucia.createSessionCookie(session.id);
     } catch (error) {
       console.log(typeof error);
       if (error instanceof z.ZodError) {
