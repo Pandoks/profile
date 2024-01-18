@@ -13,7 +13,7 @@ export const load: PageServerLoad = async (event) => {
   if (event.locals.user) {
     return redirect(302, '/');
   }
-  return {};
+  return;
 };
 
 // handle signup
@@ -45,7 +45,6 @@ export const actions: Actions = {
         ...session_cookie.attributes
       });
     } catch (error) {
-      console.log(typeof error);
       if (error instanceof z.ZodError) {
         return fail(400, { message: 'Invalid inputs' });
       } else if (error instanceof DatabaseError) {
