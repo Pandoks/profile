@@ -1,25 +1,20 @@
 import { connect } from '@planetscale/database';
 import { datetime, mysqlTable, text, varchar } from 'drizzle-orm/mysql-core';
 import { drizzle } from 'drizzle-orm/planetscale-serverless';
-
-const ENV = process.env.ENV || 'sandbox';
-const PLANETSCALE_DATABASE_HOST =
-  ENV === 'production'
-    ? process.env.PLANETSCALE_DATABASE_HOST
-    : process.env.DEVELOPMENT_DATABASE_HOST;
-const PLANETSCALE_DATABASE_USERNAME =
-  ENV === 'production'
-    ? process.env.PLANETSCALE_DATABASE_USERNAME
-    : process.env.DEVELOPMENT_DATABASE_USERNAME;
-const PLANETSCALE_DATABASE_PASSWORD =
-  ENV === 'production'
-    ? process.env.PLANETSCALE_DATABASE_PASSWORD
-    : process.env.DEVELOPMENT_DATABASE_PASSWORD;
+import {
+  ENV,
+  PLANETSCALE_DATABASE_HOST,
+  DEVELOPMENT_DATABASE_HOST,
+  PLANETSCALE_DATABASE_USERNAME,
+  DEVELOPMENT_DATABASE_USERNAME,
+  PLANETSCALE_DATABASE_PASSWORD,
+  DEVELOPMENT_DATABASE_PASSWORD
+} from '$env/static/private';
 
 const planetscale_connection = connect({
-  host: PLANETSCALE_DATABASE_HOST,
-  username: PLANETSCALE_DATABASE_USERNAME,
-  password: PLANETSCALE_DATABASE_PASSWORD
+  host: ENV === 'production' ? PLANETSCALE_DATABASE_HOST : DEVELOPMENT_DATABASE_HOST,
+  username: ENV === 'production' ? PLANETSCALE_DATABASE_USERNAME : DEVELOPMENT_DATABASE_USERNAME,
+  password: ENV === 'production' ? PLANETSCALE_DATABASE_PASSWORD : DEVELOPMENT_DATABASE_PASSWORD
 });
 export const db = drizzle(planetscale_connection);
 
