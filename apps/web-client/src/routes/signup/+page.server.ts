@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db/db';
 import { users } from '$lib/server/db/schema';
+import { DatabaseError } from '@planetscale/database';
 import { fail, type Actions } from '@sveltejs/kit';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
@@ -21,13 +22,16 @@ export const actions: Actions = {
       const { username, password } = form_data_schema.parse(Object.fromEntries(form_data));
       const user_id = generateId(15);
       const hashed_password = await new Argon2id().hash(password);
-      console.log('Inserting user');
       await db
         .insert(users)
         .values({ id: user_id, username: username, hashedPassword: hashed_password });
     } catch (error) {
-      console.log(error);
-      return fail(400, { message: 'Invalid inputs' });
+      console.log(typeof error);
+      if (error instanceof z.ZodError) {
+        return fail(400, { message: 'Invalid inputs' });
+      } else if (error instanceof DatabaseError) {
+        return fail(400, { message: 'User already exists' });
+      }
     }
   }
 };
