@@ -1,8 +1,7 @@
 import { DrizzleMySQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { Lucia } from 'lucia';
 import { db, sessions, users } from './db';
-
-const ENV = process.env.ENV || 'sandbox';
+import { ENV } from '$env/static/private';
 
 export const lucia = new Lucia(new DrizzleMySQLAdapter(db, sessions, users), {
   sessionCookie: {
