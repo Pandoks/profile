@@ -51,5 +51,6 @@ export const actions: Actions = {
         return fail(400, { message: 'User already exists' });
       }
     }
+    return redirect(302, '/');
   }
 };
