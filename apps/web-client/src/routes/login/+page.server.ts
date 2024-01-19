@@ -1,5 +1,4 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 import { z } from 'zod';
@@ -7,6 +6,7 @@ import { db } from '$lib/server/db/db';
 import { lucia } from '$lib/server/auth';
 import { users } from '$lib/server/db/schema';
 import { DatabaseError } from '@planetscale/database';
+import type { Actions, PageServerLoad } from './$types';
 
 // check if logged in
 export const load: PageServerLoad = async (event) => {
